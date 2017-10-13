@@ -1,0 +1,258 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>tests.test_alexa_gst_skill &#8212; alexa_gst_skill 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tests.test_alexa_gst_skill</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">import</span> <span class="nn">flask_ask</span>
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="k">import</span> <span class="n">post</span>
+
+<span class="kn">import</span> <span class="nn">alexa_gst_skill</span> <span class="k">as</span> <span class="nn">gst</span>
+
+<span class="n">launch</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;session&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;sessionId&quot;</span><span class="p">:</span> <span class="s2">&quot;amzn1.echo-api.session.0000000-0000-0000-0000-00000000000&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;application&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;applicationId&quot;</span><span class="p">:</span> <span class="s2">&quot;fake-application-id&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;userId&quot;</span><span class="p">:</span> <span class="s2">&quot;amzn1.account.AM3B00000000000000000000000&quot;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;System&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;application&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;applicationId&quot;</span><span class="p">:</span> <span class="s2">&quot;fake-application-id&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;userId&quot;</span><span class="p">:</span> <span class="s2">&quot;amzn1.account.AM3B00000000000000000000000&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;supportedInterfaces&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;AudioPlayer&quot;</span><span class="p">:</span> <span class="p">{}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;AudioPlayer&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;offsetInMilliseconds&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;playerActivity&quot;</span><span class="p">:</span> <span class="s2">&quot;IDLE&quot;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;LaunchRequest&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;requestId&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;locale&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;intent&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;TestPlay&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;slots&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flask_ask</span><span class="o">.</span><span class="vm">__file__</span><span class="p">,</span> <span class="s1">&#39;../..&#39;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="SmokeTestGSTSkill"><a class="viewcode-back" href="../../alexa-gst-skill.tests.html#tests.test_alexa_gst_skill.SmokeTestGSTSkill">[docs]</a><span class="k">class</span> <span class="nc">SmokeTestGSTSkill</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="SmokeTestGSTSkill.test_gst_rates"><a class="viewcode-back" href="../../alexa-gst-skill.tests.html#tests.test_alexa_gst_skill.SmokeTestGSTSkill.test_gst_rates">[docs]</a>    <span class="k">def</span> <span class="nf">test_gst_rates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Test the GST rates for items </span>
+<span class="sd">        </span>
+<span class="sd">        Examples:</span>
+<span class="sd">            * Given Milk as item test should return &#39;Milk GST rate should be 0%&#39;</span>
+<span class="sd">            * Given Coal as item test should return &#39;Coal GST rate should be 5%&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gst</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">gst</span><span class="o">.</span><span class="n">gst_rates_dict</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">gst</span><span class="o">.</span><span class="n">gst_rates_dict</span><span class="p">[</span><span class="s1">&#39;milk&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;0%&#39;</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="s2">&quot;Milk GST rate should be 0%&quot;</span><span class="p">)</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">gst</span><span class="o">.</span><span class="n">gst_rates_dict</span><span class="p">[</span><span class="s1">&#39;coal&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;5%&#39;</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="s2">&quot;Coal GST rate should be 5%&quot;</span><span class="p">)</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">gst</span><span class="o">.</span><span class="n">gst_rates_dict</span><span class="p">[</span><span class="s1">&#39;mobile&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;12%&#39;</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="s2">&quot;Mobile GST rate should be 12%&quot;</span><span class="p">)</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">gst</span><span class="o">.</span><span class="n">gst_rates_dict</span><span class="p">[</span><span class="s1">&#39;cars&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;28%&#39;</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="s2">&quot;Cars GST rate should be 28%&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SmokeTestGSTSkill.test_news"><a class="viewcode-back" href="../../alexa-gst-skill.tests.html#tests.test_alexa_gst_skill.SmokeTestGSTSkill.test_news">[docs]</a>    <span class="k">def</span> <span class="nf">test_news</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Test the GST news </span>
+<span class="sd">        </span>
+<span class="sd">        Provide RSS JSON feed to the test and test should return only GST related news</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expected_news</span> <span class="o">=</span> <span class="s1">&#39;September inflation may hit six- month high on GST and public sector pay rise; &#39;</span> \
+                        <span class="s1">&#39;Reduced GST on yarn to help textile sector: Exporter body; &#39;</span> \
+                        <span class="s1">&#39;Import of oil-drilling rigs kept out of GST purview&#39;</span>
+        <span class="n">rss_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;rss.json&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">rss_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">rss</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">actual_news</span> <span class="o">=</span> <span class="n">gst</span><span class="o">.</span><span class="n">get_gst_news</span><span class="p">(</span><span class="n">rss</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">actual_news</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">actual_news</span><span class="p">,</span> <span class="n">expected_news</span><span class="p">,</span> <span class="s1">&#39;Actual news should be same as expected news&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SmokeTestGSTSkill.test_news_error"><a class="viewcode-back" href="../../alexa-gst-skill.tests.html#tests.test_alexa_gst_skill.SmokeTestGSTSkill.test_news_error">[docs]</a>    <span class="k">def</span> <span class="nf">test_news_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Test the GST news error when RSS feed is invalid</span>
+<span class="sd">        </span>
+<span class="sd">        Should get &#39;Failed parsing RSS feed&#39; error if news in invalid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">gst</span><span class="o">.</span><span class="n">get_gst_news</span><span class="p">({})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;Failed parsing RSS feed&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="p">),</span> <span class="s2">&quot;Should get parsing failed error&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SmokeTestGSTSkillPy3"><a class="viewcode-back" href="../../alexa-gst-skill.tests.html#tests.test_alexa_gst_skill.SmokeTestGSTSkillPy3">[docs]</a><span class="nd">@unittest</span><span class="o">.</span><span class="n">skipIf</span><span class="p">(</span><span class="n">six</span><span class="o">.</span><span class="n">PY2</span><span class="p">,</span> <span class="s2">&quot;Not yet supported on Python 2.x&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SmokeTestGSTSkillPy3</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="SmokeTestGSTSkillPy3.setUp"><a class="viewcode-back" href="../../alexa-gst-skill.tests.html#tests.test_alexa_gst_skill.SmokeTestGSTSkillPy3.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">python</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">executable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PYTHONPATH&#39;</span><span class="p">:</span> <span class="n">project_root</span><span class="p">,</span>
+                    <span class="s1">&#39;ASK_VERIFY_REQUESTS&#39;</span><span class="p">:</span> <span class="s1">&#39;false&#39;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s1">&#39;SYSTEMROOT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;SYSTEMROOT&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;PATH&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">sample</span>
+        <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">python</span><span class="p">,</span> <span class="n">path</span><span class="p">],</span> <span class="n">env</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">poll</span><span class="p">(),</span>
+                          <span class="n">msg</span><span class="o">=</span><span class="s1">&#39;Poll should work,&#39;</span>
+                              <span class="s1">&#39;otherwise we failed to launch&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">process</span>
+
+    <span class="k">def</span> <span class="nf">_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://127.0.0.1:5000&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;POSTing to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+<div class="viewcode-block" id="SmokeTestGSTSkillPy3.tearDown"><a class="viewcode-back" href="../../alexa-gst-skill.tests.html#tests.test_alexa_gst_skill.SmokeTestGSTSkillPy3.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[</span><span class="si">%s</span><span class="s1">]...trying to kill.&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error killing test python process: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** it is recommended you manually kill with PID </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SmokeTestGSTSkillPy3.test_gst_skill"><a class="viewcode-back" href="../../alexa-gst-skill.tests.html#tests.test_alexa_gst_skill.SmokeTestGSTSkillPy3.test_gst_skill">[docs]</a>    <span class="k">def</span> <span class="nf">test_gst_skill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Test the Alexa GST skill service &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_launch</span><span class="p">(</span><span class="s1">&#39;alexa_gst_skill.py&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">launch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_text</span><span class="p">(</span><span class="n">response</span><span class="p">))</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">alexa_gst_skill</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../includeme.html">Alexa GST Skill</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../alexa-gst-skill.html">alexa-gst-skill package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../alexa-gst-skill.tests.html">tests package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">alexa-gst-skill</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Mahesh Jadhav.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

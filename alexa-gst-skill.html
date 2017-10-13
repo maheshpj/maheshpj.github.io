@@ -1,0 +1,331 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>alexa-gst-skill package &#8212; alexa_gst_skill 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="tests package" href="alexa-gst-skill.tests.html" />
+    <link rel="prev" title="Welcome to Alexa GST Skill Service’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="alexa-gst-skill-package">
+<h1>alexa-gst-skill package<a class="headerlink" href="#alexa-gst-skill-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="alexa-gst-skill.tests.html">tests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="alexa-gst-skill.tests.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alexa-gst-skill.tests.html#module-tests.test_alexa_gst_skill">tests.test_alexa_gst_skill module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alexa-gst-skill.tests.html#module-tests">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-alexa_gst_skill">
+<span id="alexa-gst-skill-module"></span><h2>alexa_gst_skill module<a class="headerlink" href="#module-alexa_gst_skill" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="alexa_gst_skill.error_prompt">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">error_prompt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#error_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.error_prompt" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Question) handles if there is any error</p>
+<dl class="docutils">
+<dt>Returns: </dt>
+<dd>response error</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.get_gst_feed">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">get_gst_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#get_gst_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.get_gst_feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets RSS feed</p>
+<p>Get the RSS Feed in json format from Times of India including GST news</p>
+<dl class="docutils">
+<dt>Returns: </dt>
+<dd>RSS feed in json format</dd>
+<dt>Raises:</dt>
+<dd>Exception: An error occurred while getting the RSS feed</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.get_gst_news">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">get_gst_news</code><span class="sig-paren">(</span><em>rss_json</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#get_gst_news"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.get_gst_news" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters GST news from RSS feed</p>
+<p>Filters the RSS feed for GST news and create a string</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>rss_json: RSS feed in json format</dd>
+<dt>Returns: </dt>
+<dd>GST news separated by ‘;’</dd>
+<dt>Raises:</dt>
+<dd>Exception: An error occurred while parsing the RSS feed</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_about">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_about</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_about"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_about" title="Permalink to this definition">¶</a></dt>
+<dd><p>(STATEMENT) Handles the ‘about’ custom intention.</p>
+<p>This intent will handle all statements related to information about GST</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><ul class="first last simple">
+<li>What is gst</li>
+<li>Tell me about gst</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd>About text statement</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_back">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_back</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_back"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_back" title="Permalink to this definition">¶</a></dt>
+<dd><p>(?) Handles the ‘go back!’  built-in intention.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_cancel">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_cancel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>(STATEMENT) Handles the ‘cancel’ built-in intention.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_fact">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_fact</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_fact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_fact" title="Permalink to this definition">¶</a></dt>
+<dd><p>(STATEMENT) Handles the ‘fact’ custom intention.</p>
+<p>This intent handles all facts or trivia related statements</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><ul class="first last simple">
+<li>Tell me a gst fact</li>
+<li>Give me some gst information</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd>Facts text statements</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_help">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>(QUESTION) Handles the ‘help’ built-in intention.</p>
+<p>You can provide context-specific help here by rendering templates conditional on the help referrer.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_launch">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>(QUESTION) Responds to the launch of the Skill with a welcome statement and a card.</p>
+<dl class="docutils">
+<dt>Templates:    </dt>
+<dd><ul class="first last simple">
+<li>Initial statement: ‘welcome’</li>
+<li>Reprompt statement: ‘welcome_re’</li>
+<li>Card title: ‘gst’</li>
+<li>Card body: ‘welcome_card’</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_news">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_news</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_news"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_news" title="Permalink to this definition">¶</a></dt>
+<dd><p>(STATEMENT) Handles the ‘news’ custom intention.</p>
+<p>This intent will provide user the latest news on GST from RSS feed from times of india</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><ul class="first last simple">
+<li>whats the news on gst</li>
+<li>News on gst</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd>News statements if GST news found from RSS
+No GST news statement if GST news not found from RSS 
+Error statement if can not process the request</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_no">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_no</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_no"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_no" title="Permalink to this definition">¶</a></dt>
+<dd><p>(?) Handles the ‘no’ built-in intention.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_rate">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_rate</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>(STATEMENT) Handles the ‘rate’ or ‘slab’ or ‘tax’ custom intention.</p>
+<p>This intent handles all GST Rate related questions</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><ul class="first last simple">
+<li>what is the mobile gst rate</li>
+<li>GST tax for the milk</li>
+</ul>
+</dd>
+<dt>Returns:</dt>
+<dd>GST Rate text statement if item exists
+Unknown GST Item statement if item does not exists</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_stop">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>(STATEMENT) Handles the ‘stop’ built-in intention.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.handle_yes">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_yes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_yes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_yes" title="Permalink to this definition">¶</a></dt>
+<dd><p>(?) Handles the ‘yes’  built-in intention.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.init">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize state attributes at the session start</p>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.session_ended">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">session_ended</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#session_ended"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.session_ended" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an empty for <cite>session_ended</cite>.</p>
+<p>The status of this is somewhat controversial. The <a href="#id1"><span class="problematic" id="id2">`official documentation`_</span></a> states that you cannot return a response
+to <code class="docutils literal"><span class="pre">SessionEndedRequest</span></code>. However, if it only returns a <code class="docutils literal"><span class="pre">200/OK</span></code>, the quit utterance (which is a default test
+utterance!) will return an error and the skill will not validate.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.start_over">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">start_over</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#start_over"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.start_over" title="Permalink to this definition">¶</a></dt>
+<dd><p>(QUESTION) Handles the ‘start over!’  built-in intention.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.unknown_item_reprompt">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">unknown_item_reprompt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#unknown_item_reprompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.unknown_item_reprompt" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Question) handles the unknown gst item reprompt</p>
+<dl class="docutils">
+<dt>Returns: </dt>
+<dd>response unknown item prompt</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">alexa_gst_skill</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">alexa-gst-skill package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-alexa_gst_skill">alexa_gst_skill module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="alexa-gst-skill.tests.html">tests package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">alexa-gst-skill</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">alexa-gst-skill package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Alexa GST Skill Service’s documentation!</a></li>
+      <li>Next: <a href="alexa-gst-skill.tests.html" title="next chapter">tests package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Mahesh Jadhav.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/alexa-gst-skill.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

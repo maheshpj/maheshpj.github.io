@@ -1,0 +1,461 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>alexa_gst_skill &#8212; alexa_gst_skill 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for alexa_gst_skill</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+
+<span class="c1"># alexa_gst_skill.py</span>
+<span class="c1"># By Mahesh Jadhav &lt;mahesh.jadhav@capgemini.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># Goods and Services Tax in India</span>
+
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">randint</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span>
+<span class="kn">from</span> <span class="nn">flask_ask</span> <span class="k">import</span> <span class="n">Ask</span><span class="p">,</span> <span class="n">question</span><span class="p">,</span> <span class="n">statement</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Mahesh Jadhav&#39;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s1">&#39;mahesh.jadhav@capgemini.com&#39;</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">ask</span> <span class="o">=</span> <span class="n">Ask</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;flask_ask&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+<span class="c1"># Read GST Rates from gst-rates.csv file for all items</span>
+<span class="n">gst_rates_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="init"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.init">[docs]</a><span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize state attributes at the session start</span>
+<span class="sd">    </span>
+<span class="sd">    Returns: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gst_rates_dict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;gst-rates.csv&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+            <span class="n">gst_rates_dict</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;</span><span class="se">\xef\xbb\xbf</span><span class="s1">item&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span></div>
+
+
+<span class="c1"># Session starter</span>
+<span class="c1">#</span>
+<span class="c1"># This intent is fired automatically at the point of launch (= when the session starts).</span>
+<span class="c1"># Use it to register a state machine for things you want to keep track of, such as what the last intent was, so as to be</span>
+<span class="c1"># able to give contextual help.</span>
+
+<span class="nd">@ask</span><span class="o">.</span><span class="n">on_session_started</span>
+<span class="k">def</span> <span class="nf">start_session</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fired at the start of the session, this is a great place to initialise state variables and the like.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Session started at </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()))</span>
+    <span class="n">init</span><span class="p">()</span>
+
+
+<span class="c1"># Launch intent</span>
+<span class="c1">#</span>
+<span class="c1"># This intent is fired automatically at the point of launch.</span>
+<span class="c1"># Use it as a way to introduce your Skill and say hello to the user. If you envisage your Skill to work using the</span>
+<span class="c1"># one-shot paradigm (i.e. the invocation statement contains all the parameters that are required for returning the</span>
+<span class="c1"># result</span>
+
+<div class="viewcode-block" id="handle_launch"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_launch">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">launch</span>
+<span class="k">def</span> <span class="nf">handle_launch</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (QUESTION) Responds to the launch of the Skill with a welcome statement and a card.</span>
+
+<span class="sd">    Templates:    </span>
+<span class="sd">        * Initial statement: &#39;welcome&#39;    </span>
+<span class="sd">        * Reprompt statement: &#39;welcome_re&#39;    </span>
+<span class="sd">        * Card title: &#39;gst&#39;    </span>
+<span class="sd">        * Card body: &#39;welcome_card&#39;    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">welcome_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;welcome&#39;</span><span class="p">)</span>
+    <span class="n">welcome_re_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;welcome_re&#39;</span><span class="p">)</span>
+    <span class="n">welcome_card_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;welcome_card&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">question</span><span class="p">(</span><span class="n">welcome_text</span><span class="p">)</span><span class="o">.</span><span class="n">reprompt</span><span class="p">(</span><span class="n">welcome_re_text</span><span class="p">)</span><span class="o">.</span><span class="n">standard_card</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;gst&quot;</span><span class="p">,</span>
+                                                                          <span class="n">text</span><span class="o">=</span><span class="n">welcome_card_text</span><span class="p">)</span></div>
+
+
+<span class="c1"># Custom intents</span>
+<span class="c1">#</span>
+<span class="c1"># These intents are custom intents. We need to define utterances for custom intents.</span>
+
+<div class="viewcode-block" id="handle_about"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_about">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;AboutIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_about</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (STATEMENT) Handles the &#39;about&#39; custom intention.</span>
+<span class="sd">    </span>
+<span class="sd">    This intent will handle all statements related to information about GST</span>
+<span class="sd">    </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        * What is gst</span>
+<span class="sd">        * Tell me about gst</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        About text statement</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">about_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;about&#39;</span><span class="p">)</span>
+    <span class="n">card_title</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;card_title&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">statement</span><span class="p">(</span><span class="n">about_text</span><span class="p">)</span><span class="o">.</span><span class="n">simple_card</span><span class="p">(</span><span class="n">card_title</span><span class="p">,</span> <span class="n">about_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="handle_fact"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_fact">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;FactIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_fact</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (STATEMENT) Handles the &#39;fact&#39; custom intention.</span>
+<span class="sd">    </span>
+<span class="sd">    This intent handles all facts or trivia related statements</span>
+<span class="sd">    </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        * Tell me a gst fact</span>
+<span class="sd">        * Give me some gst information</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Facts text statements</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_facts</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># increment this when adding a new fact template</span>
+    <span class="n">fact_index</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_facts</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">fact_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;gst_fact_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fact_index</span><span class="p">))</span>
+    <span class="n">card_title</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;card_title&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">statement</span><span class="p">(</span><span class="n">fact_text</span><span class="p">)</span><span class="o">.</span><span class="n">simple_card</span><span class="p">(</span><span class="n">card_title</span><span class="p">,</span> <span class="n">fact_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="handle_rate"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_rate">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;RateIntent&#39;</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="s1">&#39;Item&#39;</span><span class="p">})</span>
+<span class="k">def</span> <span class="nf">handle_rate</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (STATEMENT) Handles the &#39;rate&#39; or &#39;slab&#39; or &#39;tax&#39; custom intention.</span>
+<span class="sd">    </span>
+<span class="sd">    This intent handles all GST Rate related questions</span>
+<span class="sd">    </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        * what is the mobile gst rate</span>
+<span class="sd">        * GST tax for the milk</span>
+<span class="sd">                </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        GST Rate text statement if item exists</span>
+<span class="sd">        Unknown GST Item statement if item does not exists</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">card_title</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;card_title&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">gst_rates_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Failed getting rate for item </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">unknown_item_reprompt</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rate_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;gst_rate&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="n">rate</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">statement</span><span class="p">(</span><span class="n">rate_text</span><span class="p">)</span><span class="o">.</span><span class="n">simple_card</span><span class="p">(</span><span class="n">card_title</span><span class="p">,</span> <span class="n">rate_text</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">unknown_item_reprompt</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="handle_news"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_news">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;NewsIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_news</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (STATEMENT) Handles the &#39;news&#39; custom intention.</span>
+<span class="sd">    </span>
+<span class="sd">    This intent will provide user the latest news on GST from RSS feed from times of india</span>
+<span class="sd">    </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        * whats the news on gst</span>
+<span class="sd">        * News on gst</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        News statements if GST news found from RSS</span>
+<span class="sd">        No GST news statement if GST news not found from RSS </span>
+<span class="sd">        Error statement if can not process the request</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">card_title</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;card_title&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rss_json</span> <span class="o">=</span> <span class="n">get_gst_feed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rss_json</span><span class="p">:</span>
+            <span class="n">news</span> <span class="o">=</span> <span class="n">get_gst_news</span><span class="p">(</span><span class="n">rss_json</span><span class="p">)</span>
+            <span class="n">news_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;gst_news&#39;</span><span class="p">,</span> <span class="n">news</span><span class="o">=</span><span class="n">news</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">news_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;no_gst_news&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">error_prompt</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">statement</span><span class="p">(</span><span class="n">news_text</span><span class="p">)</span><span class="o">.</span><span class="n">simple_card</span><span class="p">(</span><span class="n">card_title</span><span class="p">,</span> <span class="n">news_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_gst_feed"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.get_gst_feed">[docs]</a><span class="k">def</span> <span class="nf">get_gst_feed</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Gets RSS feed</span>
+<span class="sd">    </span>
+<span class="sd">    Get the RSS Feed in json format from Times of India including GST news</span>
+<span class="sd">    </span>
+<span class="sd">    Returns: </span>
+<span class="sd">        RSS feed in json format</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        Exception: An error occurred while getting the RSS feed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rss_json</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rss</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://timesofindia.indiatimes.com/rssfeeds/1898055.cms?feedtype=sjson&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rss_json</span> <span class="o">=</span> <span class="n">rss</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Failed getting RSS feed&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failed getting RSS feed&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rss_json</span></div>
+
+
+<div class="viewcode-block" id="get_gst_news"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.get_gst_news">[docs]</a><span class="k">def</span> <span class="nf">get_gst_news</span><span class="p">(</span><span class="n">rss_json</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Filters GST news from RSS feed</span>
+<span class="sd">    </span>
+<span class="sd">    Filters the RSS feed for GST news and create a string</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        rss_json: RSS feed in json format</span>
+<span class="sd">        </span>
+<span class="sd">    Returns: </span>
+<span class="sd">        GST news separated by &#39;;&#39;</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        Exception: An error occurred while parsing the RSS feed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gst_news</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">rss_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rss_json</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;gst&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">],</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span>
+                    <span class="n">gst_news</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Failed parsing RSS feed&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failed parsing RSS feed&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gst_news</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="unknown_item_reprompt"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.unknown_item_reprompt">[docs]</a><span class="k">def</span> <span class="nf">unknown_item_reprompt</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (Question) handles the unknown gst item reprompt </span>
+<span class="sd">    </span>
+<span class="sd">    Returns: </span>
+<span class="sd">        response unknown item prompt</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">card_title</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;card_title&#39;</span><span class="p">)</span>
+    <span class="n">question_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;unknown_item_reprompt&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">question</span><span class="p">(</span><span class="n">question_text</span><span class="p">)</span><span class="o">.</span><span class="n">reprompt</span><span class="p">(</span><span class="n">question_text</span><span class="p">)</span><span class="o">.</span><span class="n">simple_card</span><span class="p">(</span><span class="n">card_title</span><span class="p">,</span> <span class="n">question_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="error_prompt"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.error_prompt">[docs]</a><span class="k">def</span> <span class="nf">error_prompt</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (Question) handles if there is any error </span>
+<span class="sd">    </span>
+<span class="sd">    Returns: </span>
+<span class="sd">        response error</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">card_title</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;card_title&#39;</span><span class="p">)</span>
+    <span class="n">question_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;error_prompt&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">question</span><span class="p">(</span><span class="n">question_text</span><span class="p">)</span><span class="o">.</span><span class="n">reprompt</span><span class="p">(</span><span class="n">question_text</span><span class="p">)</span><span class="o">.</span><span class="n">simple_card</span><span class="p">(</span><span class="n">card_title</span><span class="p">,</span> <span class="n">question_text</span><span class="p">)</span></div>
+
+
+<span class="c1"># Built-in intents</span>
+<span class="c1">#</span>
+<span class="c1"># These intents are built-in intents. Conveniently, built-in intents do not need you to define utterances, so you can</span>
+<span class="c1"># use them straight out of the box. Depending on whether you wish to implement these in your application, you may keep</span>
+<span class="c1">#  or delete them/comment them out.</span>
+<span class="c1">#</span>
+<span class="c1"># More about built-in intents: http://d.pr/KKyx</span>
+
+<div class="viewcode-block" id="handle_stop"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_stop">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;AMAZON.StopIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_stop</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (STATEMENT) Handles the &#39;stop&#39; built-in intention.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">farewell_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;stop_bye&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">statement</span><span class="p">(</span><span class="n">farewell_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="handle_cancel"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_cancel">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;AMAZON.CancelIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_cancel</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (STATEMENT) Handles the &#39;cancel&#39; built-in intention.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">farewell_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;cancel_bye&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">statement</span><span class="p">(</span><span class="n">farewell_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="handle_help"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_help">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;AMAZON.HelpIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_help</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (QUESTION) Handles the &#39;help&#39; built-in intention.</span>
+
+<span class="sd">    You can provide context-specific help here by rendering templates conditional on the help referrer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">help_text</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;help_text&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">question</span><span class="p">(</span><span class="n">help_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="handle_no"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_no">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;AMAZON.NoIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_no</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (?) Handles the &#39;no&#39; built-in intention.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="handle_yes"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_yes">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;AMAZON.YesIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_yes</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (?) Handles the &#39;yes&#39;  built-in intention.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="handle_back"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.handle_back">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;AMAZON.PreviousIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_back</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (?) Handles the &#39;go back!&#39;  built-in intention.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="start_over"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.start_over">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">intent</span><span class="p">(</span><span class="s1">&#39;AMAZON.StartOverIntent&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start_over</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (QUESTION) Handles the &#39;start over!&#39;  built-in intention.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<span class="c1"># Ending session</span>
+<span class="c1">#</span>
+<span class="c1"># This intention ends the session.</span>
+
+<div class="viewcode-block" id="session_ended"><a class="viewcode-back" href="../alexa-gst-skill.html#alexa_gst_skill.session_ended">[docs]</a><span class="nd">@ask</span><span class="o">.</span><span class="n">session_ended</span>
+<span class="k">def</span> <span class="nf">session_ended</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an empty for `session_ended`.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">    The status of this is somewhat controversial. The `official documentation`_ states that you cannot return a response</span>
+<span class="sd">    to ``SessionEndedRequest``. However, if it only returns a ``200/OK``, the quit utterance (which is a default test</span>
+<span class="sd">    utterance!) will return an error and the skill will not validate.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">statement</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;ASK_VERIFY_REQUESTS&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="n">verify</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ASK_VERIFY_REQUESTS&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">verify</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;ASK_VERIFY_REQUESTS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">alexa_gst_skill</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../includeme.html">Alexa GST Skill</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../alexa-gst-skill.html">alexa-gst-skill package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../alexa-gst-skill.tests.html">tests package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">alexa-gst-skill</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Mahesh Jadhav.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
