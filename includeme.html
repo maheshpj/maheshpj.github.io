@@ -43,27 +43,128 @@
             
   <div class="section" id="alexa-gst-skill">
 <h1>Alexa GST Skill<a class="headerlink" href="#alexa-gst-skill" title="Permalink to this headline">¶</a></h1>
-<p>Goods and Services Tax in India</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>GST is Goods and Services Tax in India.</p>
+<p>This project creates a microservice deployed on AWS API Gateway and Lambda and provides the API Gateway HTTPS Url
+in Alexa Developer portal.</p>
+<p>Alexa uses this microservice to provide answers related to GST like what is gst? or
+what is the GST rate of Milk? etc.</p>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>See Alexa GST Skill documentation link <a class="reference external" href="https://maheshpj.github.io/index.html">here</a></p>
+</div>
+<div class="section" id="tools-and-technologies">
+<h2>Tools and Technologies<a class="headerlink" href="#tools-and-technologies" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Python 2.7</li>
+<li><a class="reference external" href="https://github.com/johnwheeler/flask-ask">Flask-Ask</a>: Flask-Ask is a Flask extension that makes building Alexa skills for the Amazon Echo.</li>
+<li><a class="reference external" href="https://github.com/chrisvoncsefalvay/cookiecutter-flask-ask">cookiecutter-flask-ask</a>: ready-to-roll Alexa Skill skeleton based on Flask-Ask</li>
+<li><a class="reference external" href="https://www.zappa.io/">Zappa</a>: Serverless framework for Lambda and API Gateway using python</li>
+<li><a class="reference external" href="https://tox.readthedocs.io/en/latest/">Tox</a>: virtualenv management and test command line tool using pytest</li>
+<li><a class="reference external" href="http://www.sphinx-doc.org/en/stable/">Sphinx</a>: Documentation generator</li>
+<li>AWSCli: AWS command line tool</li>
+</ul>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>For better AWS security use custom AWS VPC and Security Group, add below configuration in your <code class="docutils literal"><span class="pre">zappa_settings.json</span></code> file</p>
+<div class="highlight-json"><div class="highlight"><pre><span></span>&quot;vpc_config&quot;: { // Optional Virtual Private Cloud (VPC) configuration for Lambda function
+    &quot;SubnetIds&quot;: [ &quot;subnet-12345678&quot; ], // Note: not all availability zones support Lambda!
+    &quot;SecurityGroupIds&quot;: [ &quot;sg-12345678&quot; ]
+},
+</pre></div>
+</div>
+</div>
 <div class="section" id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
 <p>It is recommended to run this project in a virtualenv. If virtualenvs are unfamiliar to you, <a class="reference external" href="http://docs.python-guide.org/en/latest/dev/virtualenvs/">this handy tutorial</a>
 might be a good place to start.</p>
+<p><strong>Create Virtual Environment</strong></p>
 <ol class="arabic simple">
-<li>Create a virtualenv for this project, and activate it.</li>
-<li><code class="docutils literal"><span class="pre">virtualenv</span> <span class="pre">env</span></code></li>
-<li><code class="docutils literal"><span class="pre">source</span> <span class="pre">env/Scripts/activate</span></code></li>
-<li>Use <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code> to install the required Python packages.</li>
-<li>You will require <code class="docutils literal"><span class="pre">ngrok</span></code> to make your skill accessible to Alexa for testing. You can download ngrok <a class="reference external" href="https://ngrok.com/download">here</a>.</li>
+<li>Install virtualenv: <code class="docutils literal"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">virtualenv</span></code></li>
+<li>Create virtual environment names env: <code class="docutils literal"><span class="pre">$</span> <span class="pre">virtualenv</span> <span class="pre">env</span></code></li>
+<li>Activate env on Unix: <code class="docutils literal"><span class="pre">$</span> <span class="pre">source</span> <span class="pre">venv/bin/activate</span></code></li>
+<li>Activate env on Windows: <code class="docutils literal"><span class="pre">$</span> <span class="pre">env\Scripts\activate</span></code></li>
+<li>Install the required Python packages from root project folder: <code class="docutils literal"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span> <span class="pre">--no-cache-dir</span></code></li>
 </ol>
-</div>
-<div class="section" id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
-<p>Follow these easy steps to test your brand new Flask-Ask project.</p>
+<p><strong>AWS Deployment</strong></p>
+<p><em>Create AWS User</em></p>
 <ol class="arabic simple">
-<li>Launch the server by invoking <code class="docutils literal"><span class="pre">python</span> <span class="pre">alexa-gst-skill.py</span></code>.</li>
-<li>With the server running, start <code class="docutils literal"><span class="pre">ngrok</span> <span class="pre">http</span> <span class="pre">5000</span></code>.</li>
-<li>Configure your app on the <a class="reference external" href="https://developer.amazon.com/alexa">Alexa Developer Portal</a>. <a class="reference external" href="https://alexatutorial.com">This video</a> by <a class="reference external" href="https://alexatutorial.com/flask-ask/">John Wheeler</a> shows how to deploy your speech assets configuration to the <a class="reference external" href="https://developer.amazon.com/alexa">Alexa Developer Portal</a>.</li>
-<li>That’s all! If you are using a browser that supports WebRTC for micophone input (Chrome, Firefox or Opera), you may use <a class="reference external" href="http://www.echosim.io/">echosim</a> to test your script - simply log in with the same credentials you used to deploy your Skill.</li>
+<li>Create an IAM user named <code class="docutils literal"><span class="pre">Zappa-Deploy</span></code> in the AWS console</li>
+<li>Give <code class="docutils literal"><span class="pre">AdministratorAccess</span></code> policy for this user</li>
+<li>Once the user is created, its Access key ID and Secret access key are displayed, keep it safe</li>
+</ol>
+<p><em>Configure IAM credentials locally</em></p>
+<ol class="arabic simple">
+<li>Make sure you are in project root folder and virtual env is active</li>
+<li>Configure AWS: <code class="docutils literal"><span class="pre">$</span> <span class="pre">aws</span> <span class="pre">configure</span></code></li>
+<li>Follow the prompts to input your <code class="docutils literal"><span class="pre">Access</span> <span class="pre">key</span> <span class="pre">ID</span></code> and <code class="docutils literal"><span class="pre">Secret</span> <span class="pre">access</span> <span class="pre">key</span></code>.</li>
+<li>For Default region name, type: <code class="docutils literal"><span class="pre">us-east-1</span></code>.</li>
+<li>For Default output format: <code class="docutils literal"><span class="pre">json</span></code>.</li>
+</ol>
+<p>This will install credentials and configuration in an <code class="docutils literal"><span class="pre">.aws</span></code> directory inside your home directory</p>
+<p><em>Deploy the skill with Zappa</em></p>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">zappa_settings.json</span></code> file has all required configuration to deploy dev to AWS</li>
+<li>Very first time execute: <code class="docutils literal"><span class="pre">$</span> <span class="pre">zappa</span> <span class="pre">deploy</span> <span class="pre">dev</span></code></li>
+<li>Releasing code updates doesn’t recreate the API gateways and is a faster. Such updates are handled through a separate command: <code class="docutils literal"><span class="pre">$</span> <span class="pre">zappa</span> <span class="pre">update</span> <span class="pre">dev</span></code></li>
+<li>API Gateway url will be displayed on cosole something like: <code class="docutils literal"><span class="pre">https://abcdefgh.execute-api.us-east-1.amazonaws.com/dev</span></code></li>
+</ol>
+<p><strong>Configure the skill in the Alexa developer console and test</strong></p>
+<ol class="arabic simple">
+<li>Working with the Alexa console requires <a class="reference external" href="https://developer.amazon.com">Alexa Developer console</a> access</li>
+<li>Go to <a class="reference external" href="https://developer.amazon.com/edw/home.html#/skills">Alexa Skills list</a> page</li>
+<li>Click the Add a New Skill button</li>
+<li>The skill configuration screen opens</li>
+</ol>
+<p><em>Skill Information section</em></p>
+<ol class="arabic simple">
+<li>Set the Name of the skill to <code class="docutils literal"><span class="pre">gst</span></code> and use an Invocation Name of repo <code class="docutils literal"><span class="pre">gst</span></code></li>
+</ol>
+<p><em>Interaction Model section</em></p>
+<ol class="arabic simple">
+<li>Paste in the <a class="reference external" href="https://github.com/maheshpj/alexa-gst-skill/blob/master/speech_assets/intent_schema.json">Intent Schema</a></li>
+<li>Create <a class="reference external" href="https://github.com/maheshpj/alexa-gst-skill/blob/master/speech_assets/custom_slot_types/LIST_OF_ITEMS">Custom Slot type</a></li>
+<li>Paste in the <a class="reference external" href="https://github.com/maheshpj/alexa-gst-skill/blob/master/speech_assets/sample_utterances.txt">Sample Utterances</a></li>
+</ol>
+<p><em>Configuration section</em></p>
+<ol class="arabic simple">
+<li>Select HTTPS as the Service Endpoint Type</li>
+<li>Paste API Gateway url</li>
+</ol>
+<p><em>SSL Certificate section</em></p>
+<ol class="arabic simple">
+<li>Select the option that reads: <code class="docutils literal"><span class="pre">My</span> <span class="pre">development</span> <span class="pre">endpoint</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">sub-domain</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">domain</span> <span class="pre">that</span> <span class="pre">has</span> <span class="pre">a</span> <span class="pre">wildcard</span> <span class="pre">certificate</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">certificate</span> <span class="pre">authority</span></code></li>
+</ol>
+<p><em>Test Section</em></p>
+<p>Now test the skill by typing: What is GST</p>
+<p>Also, you can check <a class="reference external" href="https://alexatutorial.com">This video</a> by <a class="reference external" href="https://alexatutorial.com/flask-ask/">John Wheeler</a> which shows how to deploy your speech assets configuration to the <a class="reference external" href="https://developer.amazon.com/alexa">Alexa Developer Portal</a>.</p>
+<p>That’s all! If you are using a browser that supports WebRTC for micophone input (Chrome, Firefox or Opera),
+you may use <a class="reference external" href="http://www.echosim.io/">echosim</a> to test your script - simply log in with the same credentials you used to deploy your Skill.</p>
+</div>
+<div class="section" id="testing-and-code-coverage">
+<h2>Testing and Code Coverage<a class="headerlink" href="#testing-and-code-coverage" title="Permalink to this headline">¶</a></h2>
+<p>To run tests and check code coverage, execute below command in root project directory</p>
+<p><code class="docutils literal"><span class="pre">$</span> <span class="pre">tox</span></code></p>
+<p>This will create python 2.7 virtual environment and execute the tests</p>
+<p>To clean run the tests execute <code class="docutils literal"><span class="pre">$</span> <span class="pre">tox</span> <span class="pre">--recreate</span></code></p>
+</div>
+<div class="section" id="zappa-commands">
+<h2>Zappa Commands<a class="headerlink" href="#zappa-commands" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Logs - <code class="docutils literal"><span class="pre">$</span> <span class="pre">zappa</span> <span class="pre">tail</span> <span class="pre">dev</span></code></li>
+<li>Limit the output returned and eliminate the HTTP noise in the logs by using the –since 1m and –non-httpcommand options: <code class="docutils literal"><span class="pre">$</span> <span class="pre">zappa</span> <span class="pre">tail</span> <span class="pre">dev</span> <span class="pre">--since</span> <span class="pre">1m</span> <span class="pre">--non-http</span></code></li>
+<li>Remove the AWS Lambda function, API gateway: <code class="docutils literal"><span class="pre">$</span> <span class="pre">zappa</span> <span class="pre">undeploy</span> <span class="pre">dev</span></code></li>
+</ul>
+</div>
+<div class="section" id="sphinx-commands">
+<h2>Sphinx Commands<a class="headerlink" href="#sphinx-commands" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Go to &lt;root_folder&gt;/docs and execute below commands to create HTML documents</li>
+<li>Unix: <code class="docutils literal"><span class="pre">$</span> <span class="pre">make</span> <span class="pre">html</span></code></li>
+<li>Windows: <code class="docutils literal"><span class="pre">make.bat</span> <span class="pre">html</span></code></li>
 </ol>
 </div>
 </div>
@@ -87,8 +188,14 @@ might be a good place to start.</p>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Alexa GST Skill</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tools-and-technologies">Tools and Technologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#security">Security</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-and-code-coverage">Testing and Code Coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zappa-commands">Zappa Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sphinx-commands">Sphinx Commands</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="alexa-gst-skill.html">alexa-gst-skill package</a></li>
