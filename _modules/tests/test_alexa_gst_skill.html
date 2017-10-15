@@ -141,11 +141,20 @@
         <span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Test the GST news error when RSS feed is invalid</span>
 <span class="sd">        </span>
-<span class="sd">        Should get &#39;Failed parsing RSS feed&#39; error if news in invalid</span>
+<span class="sd">        Should get &#39;Failed parsig RSS feed&#39; error if news in invalid</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">gst</span><span class="o">.</span><span class="n">get_gst_news</span><span class="p">({})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;Failed parsing RSS feed&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="p">),</span> <span class="s2">&quot;Should get parsing failed error&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;Failed parsing RSS feed&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="p">),</span> <span class="s2">&quot;Should get parsing failed error&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span>
+    <span class="k">def</span> <span class="nf">test_reddit_headline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Test the GST news from Reddit</span>
+<span class="sd">        This test may fail</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">headline</span> <span class="o">=</span> <span class="n">gst</span><span class="o">.</span><span class="n">get_reddit_headline</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span><span class="n">headline</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SmokeTestGSTSkillPy3"><a class="viewcode-back" href="../../alexa-gst-skill.tests.html#tests.test_alexa_gst_skill.SmokeTestGSTSkillPy3">[docs]</a><span class="nd">@unittest</span><span class="o">.</span><span class="n">skipIf</span><span class="p">(</span><span class="n">six</span><span class="o">.</span><span class="n">PY2</span><span class="p">,</span> <span class="s2">&quot;Not yet supported on Python 2.x&quot;</span><span class="p">)</span>

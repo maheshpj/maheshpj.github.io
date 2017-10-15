@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="tests package" href="alexa-gst-skill.tests.html" />
-    <link rel="prev" title="Welcome to Alexa GST Skill Service’s documentation!" href="index.html" />
+    <link rel="prev" title="Alexa GST Skill" href="includeme.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -72,19 +72,6 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="alexa_gst_skill.get_gst_feed">
-<code class="descclassname">alexa_gst_skill.</code><code class="descname">get_gst_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#get_gst_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.get_gst_feed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets RSS feed</p>
-<p>Get the RSS Feed in json format from Times of India including GST news</p>
-<dl class="docutils">
-<dt>Returns: </dt>
-<dd>RSS feed in json format</dd>
-<dt>Raises:</dt>
-<dd>Exception: An error occurred while getting the RSS feed</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="alexa_gst_skill.get_gst_news">
 <code class="descclassname">alexa_gst_skill.</code><code class="descname">get_gst_news</code><span class="sig-paren">(</span><em>rss_json</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#get_gst_news"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.get_gst_news" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filters GST news from RSS feed</p>
@@ -96,6 +83,33 @@
 <dd>GST news separated by ‘;’</dd>
 <dt>Raises:</dt>
 <dd>Exception: An error occurred while parsing the RSS feed</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.get_reddit_headline">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">get_reddit_headline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#get_reddit_headline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.get_reddit_headline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the GST news headline from Reddit.
+It fetches 10 news headlines regarding GST and picks one randomly</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>GST headline from Reddit</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="alexa_gst_skill.get_rss_feed">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">get_rss_feed</code><span class="sig-paren">(</span><em>url</em>, <em>is_verify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#get_rss_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.get_rss_feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets RSS feed</p>
+<p>Get the RSS Feed in json format from Times of India including GST news</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>url: RSS feed url
+is_verify: verify the SSL certificate authority or not</dd>
+<dt>Returns: </dt>
+<dd>RSS feed in json format</dd>
+<dt>Raises:</dt>
+<dd>Exception: An error occurred while getting the RSS feed</dd>
 </dl>
 </dd></dl>
 
@@ -171,8 +185,9 @@
 <dl class="function">
 <dt id="alexa_gst_skill.handle_news">
 <code class="descclassname">alexa_gst_skill.</code><code class="descname">handle_news</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#handle_news"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.handle_news" title="Permalink to this definition">¶</a></dt>
-<dd><p>(STATEMENT) Handles the ‘news’ custom intention.</p>
-<p>This intent will provide user the latest news on GST from RSS feed from times of india</p>
+<dd><p>(QUESTION) Handles the ‘news’ custom intention.</p>
+<p>This intent will provide user the latest news on GST from RSS feed from reddit and 
+for failover times of india, and asks if user wants ti hear more news</p>
 <dl class="docutils">
 <dt>Examples:</dt>
 <dd><ul class="first last simple">
@@ -231,6 +246,16 @@ Unknown GST Item statement if item does not exists</dd>
 </dd></dl>
 
 <dl class="function">
+<dt id="alexa_gst_skill.no_intent">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">no_intent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#no_intent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.no_intent" title="Permalink to this definition">¶</a></dt>
+<dd><p>(STATEMENT) Handles the ‘No’ answer</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>Bye statement</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="alexa_gst_skill.session_ended">
 <code class="descclassname">alexa_gst_skill.</code><code class="descname">session_ended</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#session_ended"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.session_ended" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an empty for <cite>session_ended</cite>.</p>
@@ -255,6 +280,20 @@ utterance!) will return an error and the skill will not validate.</p>
 </dl>
 </dd></dl>
 
+<dl class="function">
+<dt id="alexa_gst_skill.yes_intent">
+<code class="descclassname">alexa_gst_skill.</code><code class="descname">yes_intent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alexa_gst_skill.html#yes_intent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alexa_gst_skill.yes_intent" title="Permalink to this definition">¶</a></dt>
+<dd><p>(QUESTION) Handles the ‘Yes’ answer for more news.</p>
+<p>When user asks on more news by saying ‘Yes’ to news question this intent will
+again call the news intent and fetches a random headline.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>News statements if GST news found from RSS
+No GST news statement if GST news not found from RSS 
+Error statement if can not process the request</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -276,6 +315,7 @@ utterance!) will return an error and the skill will not validate.</p>
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="includeme.html">Alexa GST Skill</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">alexa-gst-skill package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
@@ -293,7 +333,7 @@ utterance!) will return an error and the skill will not validate.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Alexa GST Skill Service’s documentation!</a></li>
+      <li>Previous: <a href="includeme.html" title="previous chapter">Alexa GST Skill</a></li>
       <li>Next: <a href="alexa-gst-skill.tests.html" title="next chapter">tests package</a></li>
   </ul></li>
 </ul>
