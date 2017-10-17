@@ -43,6 +43,7 @@
             
   <div class="section" id="alexa-gst-skill">
 <h1>Alexa GST Skill<a class="headerlink" href="#alexa-gst-skill" title="Permalink to this headline">¶</a></h1>
+<img alt="GST India" src="_images/gst-img-108-108.png" />
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>GST is Goods and Services Tax in India.</p>
@@ -53,11 +54,25 @@ what is the GST rate of Milk? etc.</p>
 </div>
 <div class="section" id="architecture">
 <h2>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h2>
-<img alt="_images/alexa-gst-arch.png" src="_images/alexa-gst-arch.png" />
+<img alt="Alexa GST Skill Service Design" src="_images/alexa-gst-arch.png" />
 </div>
 <div class="section" id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
 <p>See Alexa GST Skill documentation link <a class="reference external" href="https://maheshpj.github.io/index.html">here</a></p>
+</div>
+<div class="section" id="utterances-examples">
+<h2>Utterances Examples<a class="headerlink" href="#utterances-examples" title="Permalink to this headline">¶</a></h2>
+<p>Below are few utterances ezamples users can use with this service</p>
+<ul class="simple">
+<li>Alexa, what is gst india</li>
+<li>What is the gst india rate for milk</li>
+<li>What is the news on gst india</li>
+<li>Tell me a fact on gst india</li>
+<li>Give me an idea about gst india</li>
+<li>Gst india tax for the tea</li>
+<li>Give me a gst india trivia</li>
+<li>Tell me the latest news on gst india</li>
+</ul>
 </div>
 <div class="section" id="tools-and-technologies">
 <h2>Tools and Technologies<a class="headerlink" href="#tools-and-technologies" title="Permalink to this headline">¶</a></h2>
@@ -74,10 +89,10 @@ what is the GST rate of Milk? etc.</p>
 <div class="section" id="security">
 <h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
 <p>For better AWS security use custom AWS VPC and Security Group, add below configuration in your <code class="docutils literal"><span class="pre">zappa_settings.json</span></code> file</p>
-<div class="highlight-json"><div class="highlight"><pre><span></span>&quot;vpc_config&quot;: { // Optional Virtual Private Cloud (VPC) configuration for Lambda function
-    &quot;SubnetIds&quot;: [ &quot;subnet-12345678&quot; ], // Note: not all availability zones support Lambda!
+<div class="highlight-json"><div class="highlight"><pre><span></span>&quot;vpc_config&quot;: {
+    &quot;SubnetIds&quot;: [ &quot;subnet-12345678&quot; ],
     &quot;SecurityGroupIds&quot;: [ &quot;sg-12345678&quot; ]
-},
+}
 </pre></div>
 </div>
 </div>
@@ -195,6 +210,7 @@ you may use <a class="reference external" href="http://www.echosim.io/">echosim<
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#architecture">Architecture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utterances-examples">Utterances Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tools-and-technologies">Tools and Technologies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#security">Security</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
